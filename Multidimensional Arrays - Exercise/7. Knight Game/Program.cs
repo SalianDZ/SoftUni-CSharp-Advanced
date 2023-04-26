@@ -1,104 +1,135 @@
 ﻿int size = int.Parse(Console.ReadLine());
 
-
-char[,] matrix = new char[size, size];
-for (int row = 0; row < matrix.GetLength(0); row++)
-{
-    string data = Console.ReadLine();
-    for (int col = 0; col < matrix.GetLength(1); col++)
-    {
-        matrix[row, col] = data[col];
-    }
-}
-
-if (size <= 2)
+if (size< 3)
 {
     Console.WriteLine(0);
     return;
 }
-int counter = 0;
 
-//Трябва да дебъгна и да намеря грешката
-for (int row = 0; row < matrix.GetLength(0); row++)
+char[,] matrix = new char[size, size];
+
+for (int row = 0; row < size; row++)
 {
-    for (int col = 0; col < matrix.GetLength(1); col++)
+    string chars = Console.ReadLine();
+    for (int col = 0; col < size; col++)
     {
-        if (matrix[row, col] == 'K')
+        matrix[row, col] = chars[col];
+    }
+}
+
+int knightsRemoved = 0;
+
+while (true)
+{
+    int countMostAttacking = 0;
+    int rowMostAttacking = 0;
+    int colMostAttacking = 0;
+
+    for (int row = 0; row < size; row++)
+    {
+        for (int col = 0; col < size; col++)
         {
-            if (col - 2 >= 0 && row - 1 >= 0)
+            if (matrix[row,col] == 'K')
             {
-                if (matrix[row - 1, col - 2] == 'K')
+                int attackedKnights = CountAttackedKnights(row, col);
+
+                if (countMostAttacking < attackedKnights)
                 {
-                    matrix[row - 1, col - 2] = '0';
-                    counter++;
-                    continue;
-                }
-            }
-            if (col - 2 >= 0 && row + 1 < matrix.GetLength(0))
-            {
-                if (matrix[row + 1, col - 2] == 'K')
-                {
-                    matrix[row + 1, col - 2] = '0';
-                    counter++;
-                    continue;
-                }
-            }
-            if (row - 2 >= 0 && col - 1 >= 0)
-            {
-                if (matrix[row - 2, col - 1] == 'K')
-                {
-                    matrix[row - 2, col - 1] = '0';
-                    counter++;
-                    continue;
-                }
-            }
-            if (row - 2 >= 0 && col + 1 < matrix.GetLength(1))
-            {
-                if (matrix[row - 2, col + 1] == 'K')
-                {
-                    matrix[row - 2, col + 1] = '0';
-                    counter++;
-                    continue;
-                }
-            }
-            if (col + 2 < matrix.GetLength(1) && row - 1 >= 0)
-            {
-                if (matrix[row - 1, col + 2] == 'K')
-                {
-                    matrix[row - 1, col + 2] = '0';
-                    counter++;
-                    continue;
-                }
-            }
-            if (col + 2 < matrix.GetLength(1) && row + 1 < matrix.GetLength(0))
-            {
-                if (matrix[row + 1, col + 2] == 'K')
-                {
-                    matrix[row + 1, col + 2] = '0';
-                    counter++;
-                    continue;
-                }
-            }
-            if (row + 2 < matrix.GetLength(0) && col + 1 < matrix.GetLength(1))
-            {
-                if (matrix[row + 2, col + 1] == 'K')
-                {
-                    matrix[row + 2, col + 1] = '0';
-                    counter++;
-                    continue;
-                }
-            }
-            if (row + 2 < matrix.GetLength(0) && col - 1 >= 0)
-            {
-                if (matrix[row + 2, col - 1] == 'K')
-                {
-                    matrix[row + 2, col - 1] = '0';
-                    counter++;
-                    continue;
+                    countMostAttacking = attackedKnights;
+                    rowMostAttacking = row;
+                    colMostAttacking = col;
                 }
             }
         }
     }
+
+    if (countMostAttacking == 0)
+    {
+        break;
+    }
+    else
+    {
+        matrix[rowMostAttacking, colMostAttacking] = '0'; 
+        knightsRemoved++;
+    }
+}
+Console.WriteLine(knightsRemoved);
+
+
+
+int CountAttackedKnights(int row, int col)
+{
+    int attackedKnights = 0;
+
+    if (isCellValid(row - 1, col - 2))
+    {
+        if (matrix[row - 1, col - 2] == 'K')
+        {
+            attackedKnights++;
+        }
+    }
+
+    if (isCellValid(row + 1, col - 2))
+    {
+        if (matrix[row + 1, col - 2] == 'K')
+        {
+            attackedKnights++;
+        }
+    }
+
+    if (isCellValid(row - 1, col + 2))
+    {
+        if (matrix[row - 1, col + 2] == 'K')
+        {
+            attackedKnights++;
+        }
+    }
+
+    if (isCellValid(row + 1, col + 2))
+    {
+        if (matrix[row + 1, col + 2] == 'K')
+        {
+            attackedKnights++;
+        }
+    }
+
+    if (isCellValid(row - 2, col - 1))
+    {
+        if (matrix[row - 2, col - 1] == 'K')
+        {
+            attackedKnights++;
+        }
+    }
+
+    if (isCellValid(row - 2, col + 1))
+    {
+        if (matrix[row - 2, col + 1] == 'K')
+        {
+            attackedKnights++;
+        }
+    }
+
+    if (isCellValid(row + 2, col - 1))
+    {
+        if (matrix[row + 2, col - 1] == 'K')
+        {
+            attackedKnights++;
+        }
+    }
+
+    if (isCellValid(row + 2, col + 1))
+    {
+        if (matrix[row + 2, col + 1] == 'K')
+        {
+            attackedKnights++;
+        }
+    }
+
+    return attackedKnights;
 }
 
-Console.WriteLine(counter);
+
+bool isCellValid(int row, int col)
+{
+    return row >= 0 && row < size && col >= 0 && col < size;
+}
